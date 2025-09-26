@@ -1,25 +1,22 @@
 <?php
 session_start();
+// This must exist and define the login-arc functions
 include "./assets/components/login-arc.php";
 
-
+// --- Authentication Logic (Unchanged) ---
 if(isset($_COOKIE['logindata']) && $_COOKIE['logindata'] == $key['token'] && $key['expired'] == "no"){
     if(!isset($_SESSION['IAm-logined'])){
         $_SESSION['IAm-logined'] = 'yes';
     }
-
 }
 elseif(isset($_SESSION['IAm-logined'])){
     $client_token = generate_token();
     setcookie("logindata", $client_token, time() + (86400 * 30), "/"); // 86400 = 1 day
     change_token($client_token);
-
 }
-
-
 else {
     header('location: login.php');
-    
+    exit(); // Always exit after a redirect
 }
 ?>
 
@@ -28,942 +25,212 @@ else {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
-    <link href="./assets/css/light-theme.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <title>Storm Breaker - Dashboard</title>
+    <title>SB C2 :: v3.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
-        
         :root {
-            --neon-green: #00ff41;
-            --neon-blue: #00d4ff;
-            --neon-purple: #b300ff;
-            --neon-red: #ff0040;
-            --neon-yellow: #ffff00;
-            --cyber-dark: #0a0a0a;
-            --cyber-darker: #050505;
-            --cyber-gray: #1a1a1a;
-            --cyber-light: #2a2a2a;
-            --sidebar-width: 280px;
+            --dark-bg: #0a0a0a;
+            --main-color: #00ff41;
+            --secondary-color: #008f11;
+            --warning-color: #ffc107;
+            --danger-color: #ff0033;
+            --glow-color: rgba(0, 255, 65, 0.4);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* --- Basic Styles (Unchanged) --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Orbitron', monospace;
-            background: var(--cyber-dark);
-            min-height: 100vh;
-            color: var(--neon-green);
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* Matrix Background Effect */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(0, 255, 65, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 80%, rgba(179, 0, 255, 0.1) 0%, transparent 50%);
-            z-index: -2;
-        }
-
-        /* Animated Grid Background */
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(0, 255, 65, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 65, 0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: grid-move 20s linear infinite;
-            z-index: -1;
-        }
-
-        @keyframes grid-move {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
-        }
-
-        .dashboard-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            width: var(--sidebar-width);
-            background: linear-gradient(180deg, var(--cyber-darker) 0%, var(--cyber-gray) 100%);
-            border-right: 2px solid var(--neon-green);
-            box-shadow: 
-                0 0 20px rgba(0, 255, 65, 0.3),
-                inset -2px 0 10px rgba(0, 0, 0, 0.5);
-            padding: 20px 0;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        .sidebar-header {
-            padding: 0 20px 30px;
-            border-bottom: 1px solid var(--neon-green);
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .sidebar-header::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            width: 100%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
-            animation: pulse-glow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes pulse-glow {
-            0% { opacity: 0.3; }
-            100% { opacity: 1; }
-        }
-
-        .sidebar-header h2 {
-            color: var(--neon-green);
-            font-size: 24px;
-            font-weight: 900;
-            margin-bottom: 5px;
-            text-shadow: 0 0 10px var(--neon-green);
-            animation: text-glow 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes text-glow {
-            0% { text-shadow: 0 0 10px var(--neon-green); }
-            100% { text-shadow: 0 0 20px var(--neon-green), 0 0 30px var(--neon-green); }
-        }
-
-        .sidebar-header p {
-            color: var(--neon-blue);
-            font-size: 12px;
+            background-color: var(--dark-bg);
+            color: var(--main-color);
             font-family: 'Share Tech Mono', monospace;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .nav-menu {
-            list-style: none;
-            padding: 0 10px;
-        }
-
-        .nav-item {
-            margin-bottom: 5px;
-        }
-
-        .nav-link {
+            text-shadow: 0 0 5px var(--glow-color);
             display: flex;
+            flex-direction: column;
             align-items: center;
-            padding: 15px 20px;
-            color: var(--neon-blue);
-            text-decoration: none;
-            border-radius: 0;
-            border-left: 3px solid transparent;
-            transition: all 0.3s ease;
-            font-size: 14px;
-            font-weight: 400;
-            font-family: 'Share Tech Mono', monospace;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-link::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.1), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .nav-link:hover::before {
-            left: 100%;
-        }
-
-        .nav-link:hover {
-            background: rgba(0, 255, 65, 0.05);
-            color: var(--neon-green);
-            border-left-color: var(--neon-green);
-            transform: translateX(10px);
-            box-shadow: inset 0 0 20px rgba(0, 255, 65, 0.1);
-        }
-
-        .nav-link.active {
-            background: rgba(0, 255, 65, 0.1);
-            color: var(--neon-green);
-            border-left-color: var(--neon-green);
-            font-weight: 700;
-            box-shadow: 
-                inset 0 0 20px rgba(0, 255, 65, 0.2),
-                0 0 10px rgba(0, 255, 65, 0.3);
-        }
-
-        .nav-link i {
-            margin-right: 12px;
-            width: 20px;
-            text-align: center;
-        }
-
-        .main-content {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            padding: 30px;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .dashboard-header {
-            background: linear-gradient(135deg, var(--cyber-gray) 0%, var(--cyber-light) 100%);
-            border: 1px solid var(--neon-green);
-            border-radius: 0;
-            padding: 25px 30px;
-            margin-bottom: 30px;
-            box-shadow: 
-                0 0 30px rgba(0, 255, 65, 0.2),
-                inset 0 0 20px rgba(0, 0, 0, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .dashboard-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.1), transparent);
-            animation: scan-line 3s ease-in-out infinite;
-        }
-
-        @keyframes scan-line {
-            0% { left: -100%; }
-            50% { left: 100%; }
-            100% { left: 100%; }
-        }
-
-        .dashboard-title {
-            font-size: 32px;
-            font-weight: 900;
-            color: var(--neon-green);
-            margin-bottom: 10px;
-            text-shadow: 0 0 15px var(--neon-green);
-            font-family: 'Orbitron', monospace;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .dashboard-subtitle {
-            color: var(--neon-blue);
-            font-size: 14px;
-            font-family: 'Share Tech Mono', monospace;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, var(--cyber-gray) 0%, var(--cyber-light) 100%);
-            border: 1px solid var(--neon-green);
-            border-radius: 0;
-            padding: 25px;
-            box-shadow: 
-                0 0 20px rgba(0, 255, 65, 0.2),
-                inset 0 0 20px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--neon-green), var(--neon-blue), var(--neon-purple));
-            animation: border-flow 2s linear infinite;
-        }
-
-        @keyframes border-flow {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .stat-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 
-                0 0 30px rgba(0, 255, 65, 0.4),
-                inset 0 0 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .stat-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            color: white;
-        }
-
-        .stat-icon.instagram { 
-            background: linear-gradient(45deg, var(--neon-purple), var(--neon-red)); 
-            box-shadow: 0 0 20px rgba(179, 0, 255, 0.5);
-        }
-        .stat-icon.facebook { 
-            background: linear-gradient(45deg, var(--neon-blue), var(--neon-green)); 
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
-        }
-        .stat-icon.snapchat { 
-            background: linear-gradient(45deg, var(--neon-yellow), var(--neon-red)); 
-            box-shadow: 0 0 20px rgba(255, 255, 0, 0.5);
-        }
-        .stat-icon.google { 
-            background: linear-gradient(45deg, var(--neon-green), var(--neon-blue)); 
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: 900;
-            color: var(--neon-green);
-            text-shadow: 0 0 10px var(--neon-green);
-            font-family: 'Orbitron', monospace;
-        }
-
-        .stat-label {
-            color: var(--neon-blue);
-            font-size: 12px;
-            margin-top: 5px;
-            font-family: 'Share Tech Mono', monospace;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .control-panel {
-            background: linear-gradient(135deg, var(--cyber-gray) 0%, var(--cyber-light) 100%);
-            border: 1px solid var(--neon-green);
-            border-radius: 0;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 
-                0 0 30px rgba(0, 255, 65, 0.2),
-                inset 0 0 20px rgba(0, 0, 0, 0.3);
-            position: relative;
-        }
-
-        .control-panel h3 {
-            color: var(--neon-green);
-            margin-bottom: 20px;
-            font-size: 20px;
-            font-weight: 700;
-            font-family: 'Orbitron', monospace;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 0 0 10px var(--neon-green);
-        }
-
-        .control-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .btn-dashboard {
-            padding: 15px 25px;
-            border: 1px solid var(--neon-green);
-            border-radius: 0;
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            font-family: 'Share Tech Mono', monospace;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
-            background: var(--cyber-gray);
-        }
-
-        .btn-dashboard::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .btn-dashboard:hover::before {
-            left: 100%;
-        }
-
-        .btn-dashboard i {
-            margin-right: 10px;
-            font-size: 14px;
-        }
-
-        .btn-dashboard:hover {
-            transform: translateY(-3px);
-            box-shadow: 
-                0 0 20px rgba(0, 255, 65, 0.4),
-                inset 0 0 20px rgba(0, 255, 65, 0.1);
-            border-color: var(--neon-green);
-        }
-
-        .btn-primary { 
-            color: var(--neon-blue); 
-            border-color: var(--neon-blue);
-        }
-        .btn-primary:hover { 
-            color: var(--neon-green); 
-            border-color: var(--neon-green);
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
-        }
-        
-        .btn-success { 
-            color: var(--neon-green); 
-            border-color: var(--neon-green);
-        }
-        .btn-success:hover { 
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
-        }
-        
-        .btn-danger { 
-            color: var(--neon-red); 
-            border-color: var(--neon-red);
-        }
-        .btn-danger:hover { 
-            color: var(--neon-green); 
-            border-color: var(--neon-green);
-            box-shadow: 0 0 20px rgba(255, 0, 64, 0.4);
-        }
-        
-        .btn-warning { 
-            color: var(--neon-yellow); 
-            border-color: var(--neon-yellow);
-        }
-        .btn-warning:hover { 
-            color: var(--neon-green); 
-            border-color: var(--neon-green);
-            box-shadow: 0 0 20px rgba(255, 255, 0, 0.4);
-        }
-        
-        .btn-info { 
-            color: var(--neon-blue); 
-            border-color: var(--neon-blue);
-        }
-        .btn-info:hover { 
-            color: var(--neon-green); 
-            border-color: var(--neon-green);
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
-        }
-
-        .results-panel {
-            background: linear-gradient(135deg, var(--cyber-gray) 0%, var(--cyber-light) 100%);
-            border: 1px solid var(--neon-green);
-            border-radius: 0;
-            padding: 30px;
-            box-shadow: 
-                0 0 30px rgba(0, 255, 65, 0.2),
-                inset 0 0 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .results-panel h3 {
-            color: var(--neon-green);
-            margin-bottom: 20px;
-            font-size: 20px;
-            font-weight: 700;
-            font-family: 'Orbitron', monospace;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 0 0 10px var(--neon-green);
-        }
-
-        .results-textarea {
-            width: 100%;
-            min-height: 400px;
-            border: 1px solid var(--neon-green);
-            border-radius: 0;
             padding: 20px;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 12px;
-            line-height: 1.6;
-            resize: vertical;
-            background: var(--cyber-darker);
-            color: var(--neon-green);
-            box-shadow: 
-                inset 0 0 20px rgba(0, 0, 0, 0.5),
-                0 0 10px rgba(0, 255, 65, 0.1);
+            min-height: 100vh;
         }
-
-        .results-textarea:focus {
-            outline: none;
-            border-color: var(--neon-blue);
-            box-shadow: 
-                inset 0 0 20px rgba(0, 0, 0, 0.5),
-                0 0 20px rgba(0, 212, 255, 0.3);
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.3) 0, rgba(0,0,0,0.3) 1px, transparent 1px, transparent 2px);
+            pointer-events: none; z-index: 1000;
         }
+        .container { width: 100%; max-width: 900px; display: flex; flex-direction: column; align-items: center; }
+        .header { width: 100%; border: 1px solid var(--secondary-color); padding: 10px 20px; margin-bottom: 20px; box-shadow: 0 0 15px var(--glow-color) inset; }
+        .header h1 { font-size: 1.5em; text-transform: uppercase; white-space: nowrap; overflow: hidden; }
+        .header h1::after { content: '_'; animation: blink 1s step-end infinite; }
+        @keyframes blink { from, to { color: transparent; } 50% { color: var(--main-color); } }
 
-        .template-links {
-            background: linear-gradient(135deg, var(--cyber-gray) 0%, var(--cyber-light) 100%);
-            border: 1px solid var(--neon-green);
-            border-radius: 0;
-            padding: 30px;
-            box-shadow: 
-                0 0 30px rgba(0, 255, 65, 0.2),
-                inset 0 0 20px rgba(0, 0, 0, 0.3);
+        /* --- Custom Hacker-style Scrollbar (Unchanged) --- */
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: var(--dark-bg); border-left: 1px solid var(--secondary-color); }
+        ::-webkit-scrollbar-thumb { background: var(--secondary-color); border: 1px solid var(--main-color); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--main-color); box-shadow: 0 0 10px var(--glow-color); }
+
+        /* --- Styling for the Links Section (Unchanged) --- */
+        #links-container { width: 100%; border: 1px solid var(--secondary-color); padding: 20px; margin-bottom: 20px; min-height: 100px; }
+        .link-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 5px; background: rgba(0, 15, 0, 0.2); }
+        .link-item .name { margin-right: 15px; white-space: nowrap; }
+        .link-item .url { flex-grow: 1; color: var(--warning-color); text-shadow: 0 0 5px var(--warning-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .copy-btn { background: transparent; border: 1px solid var(--main-color); color: var(--main-color); padding: 5px 10px; margin-left: 15px; cursor: pointer; transition: all 0.2s ease; }
+        .copy-btn:hover { background-color: var(--main-color); color: var(--dark-bg); text-shadow: none; }
+
+        /* --- Styles for Textarea (Unchanged) --- */
+        #result { background-color: rgba(0,15,0,0.2); border: 1px solid var(--secondary-color); color: var(--danger-color); text-shadow: 0 0 5px var(--danger-color); font-family: inherit; font-size: 1em; padding: 15px; width: 100%; resize: vertical; box-shadow: 0 0 10px var(--glow-color) inset; }
+        #result:focus { outline: none; border-color: var(--main-color); box-shadow: 0 0 15px var(--glow-color) inset, 0 0 10px var(--glow-color); }
+        #result::placeholder { color: var(--secondary-color); opacity: 0.7; }
+
+        /* --- Styles for Buttons (Unchanged) --- */
+        .controls { display: flex; flex-wrap: wrap; justify-content: center; width: 100%; margin-top: 20px; }
+        .btn { background: transparent; border: 1px solid; font-family: inherit; font-size: 0.9em; padding: 10px 20px; margin: 5px; cursor: pointer; text-transform: uppercase; transition: all 0.2s ease; }
+        .btn:hover { color: var(--dark-bg); text-shadow: none; }
+        .btn-danger { border-color: var(--danger-color); color: var(--danger-color); text-shadow: 0 0 5px var(--danger-color); }
+        .btn-danger:hover { background-color: var(--danger-color); box-shadow: 0 0 10px var(--danger-color); }
+        .btn-success { border-color: var(--main-color); color: var(--main-color); }
+        .btn-success:hover { background-color: var(--main-color); box-shadow: 0 0 10px var(--glow-color); }
+        .btn-warning { border-color: var(--warning-color); color: var(--warning-color); text-shadow: 0 0 5px var(--warning-color); }
+        .btn-warning:hover { background-color: var(--warning-color); box-shadow: 0 0 10px var(--warning-color); }
+
+        /* --- NEW: Custom SweetAlert Popup Styling --- */
+        .swal2-popup.hacker-swal {
+            background-color: var(--dark-bg);
+            border: 1px solid var(--main-color);
+            box-shadow: 0 0 20px var(--glow-color);
         }
-
-        .template-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 15px;
+        .swal2-popup.hacker-swal .swal2-title {
+            color: var(--main-color);
+            text-shadow: 0 0 5px var(--glow-color);
         }
-
-        .template-item {
-            display: flex;
-            align-items: center;
-            background: var(--cyber-darker);
-            border: 1px solid var(--neon-blue);
-            border-radius: 0;
-            padding: 15px;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .template-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .template-item:hover::before {
-            opacity: 1;
-        }
-
-        .template-item:hover {
-            background: var(--cyber-gray);
-            transform: translateY(-3px);
-            border-color: var(--neon-green);
-            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
-        }
-
-        .template-url {
-            flex: 1;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 11px;
-            color: var(--neon-blue);
-            margin-right: 10px;
-            word-break: break-all;
-        }
-
-        .copy-btn {
-            background: var(--cyber-gray);
-            color: var(--neon-green);
-            border: 1px solid var(--neon-green);
-            border-radius: 0;
-            padding: 8px 12px;
-            font-size: 10px;
-            font-family: 'Share Tech Mono', monospace;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .copy-btn:hover {
-            background: var(--neon-green);
-            color: var(--cyber-dark);
-            box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-
-            .sidebar.open {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
-                padding: 20px;
-            }
-
-            .dashboard-header {
-                padding: 20px;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .control-buttons {
-                grid-template-columns: 1fr;
-            }
-
-            .template-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .mobile-menu-btn {
-            display: none;
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1001;
-            background: var(--cyber-gray);
-            color: var(--neon-green);
-            border: 1px solid var(--neon-green);
-            border-radius: 0;
-            padding: 12px;
-            font-size: 18px;
-            cursor: pointer;
-            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .mobile-menu-btn:hover {
-            background: var(--neon-green);
-            color: var(--cyber-dark);
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
-        }
-
-        @media (max-width: 768px) {
-            .mobile-menu-btn {
-                display: block;
-            }
+        .swal2-popup.hacker-swal .swal2-html-container {
+            color: #ccc;
         }
     </style>
 </head>
 
 <body id="ourbody" onload="check_new_version()">
-    <button class="mobile-menu-btn" onclick="toggleSidebar()">
-        <i class="fas fa-bars"></i>
-    </button>
 
-    <div class="dashboard-container">
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <h2><i class="fas fa-skull-crossbones"></i> STORM BREAKER</h2>
-                <p>CYBER OPERATIONS CENTER</p>
-            </div>
-            
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="#dashboard" class="nav-link active">
-                        <i class="fas fa-terminal"></i>
-                        DASHBOARD
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#templates" class="nav-link">
-                        <i class="fas fa-bug"></i>
-                        TEMPLATES
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#results" class="nav-link">
-                        <i class="fas fa-database"></i>
-                        LOGS
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#controls" class="nav-link">
-                        <i class="fas fa-crosshairs"></i>
-                        CONTROLS
-                    </a>
-                </li>
-            </ul>
-        </div>
+<div class="container">
+    <header class="header">
+        <h1 id="heading-text"></h1>
+    </header>
 
-        <div class="main-content">
-            <!-- Dashboard Tab -->
-            <div id="dashboard-tab" class="tab-content active">
-                <div class="dashboard-header">
-                    <h1 class="dashboard-title">MISSION CONTROL</h1>
-                    <p class="dashboard-subtitle">MONITORING CYBER OPERATIONS</p>
-                </div>
+    <div id="links-container">
+        <p>> Fetching available templates...</p>
+    </div>
 
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-icon instagram">
-                                <i class="fab fa-instagram"></i>
-                            </div>
-                            <div class="stat-value" id="instagram-count">0</div>
-                        </div>
-                        <div class="stat-label">TARGETS COMPROMISED</div>
-                    </div>
+    <textarea id="result" rows="15" placeholder="[ awaiting listener output... ]"></textarea>
 
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-icon facebook">
-                                <i class="fab fa-facebook"></i>
-                            </div>
-                            <div class="stat-value" id="facebook-count">0</div>
-                        </div>
-                        <div class="stat-label">TARGETS COMPROMISED</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-icon snapchat">
-                                <i class="fab fa-snapchat"></i>
-                            </div>
-                            <div class="stat-value" id="snapchat-count">0</div>
-                        </div>
-                        <div class="stat-label">TARGETS COMPROMISED</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-icon google">
-                                <i class="fab fa-google"></i>
-                            </div>
-                            <div class="stat-value" id="google-count">0</div>
-                        </div>
-                        <div class="stat-label">TARGETS COMPROMISED</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Templates Tab -->
-            <div id="templates-tab" class="tab-content">
-                <div class="dashboard-header">
-                    <h1 class="dashboard-title">WEAPON DEPLOYMENT</h1>
-                    <p class="dashboard-subtitle">PHISHING TEMPLATES READY FOR DEPLOYMENT</p>
-                </div>
-
-                <div class="template-links">
-                    <div class="template-grid" id="links"></div>
-                </div>
-            </div>
-
-            <!-- Results Tab -->
-            <div id="results-tab" class="tab-content">
-                <div class="dashboard-header">
-                    <h1 class="dashboard-title">INTELLIGENCE GATHERING</h1>
-                    <p class="dashboard-subtitle">CAPTURED DATA AND OPERATION LOGS</p>
-                </div>
-
-                <div class="results-panel">
-                    <textarea class="results-textarea" id="result" placeholder="Results will appear here..."></textarea>
-                </div>
-            </div>
-
-            <!-- Controls Tab -->
-            <div id="controls-tab" class="tab-content">
-                <div class="dashboard-header">
-                    <h1 class="dashboard-title">COMMAND CENTER</h1>
-                    <p class="dashboard-subtitle">OPERATION CONTROL AND MANAGEMENT</p>
+    <div class="controls">
+        <button class="btn btn-danger" id="btn-listen">> Stop Listener</button>
+        <button class="btn btn-success" onclick="saveLogsAndNotify()">> Download Logs</button>
+        <button class="btn btn-warning" id="btn-clear">> Clear Logs</button>
+    </div>
 </div>
 
-                <div class="control-panel">
-                    <h3><i class="fas fa-crosshairs"></i> SYSTEM CONTROLS</h3>
-                    <div class="control-buttons">
-                        <button class="btn-dashboard btn-danger" id="btn-listen">
-                            <i class="fas fa-play"></i>
-                            <span>Listener Running / Press to Stop</span>
-                        </button>
-                        <button class="btn-dashboard btn-success" onclick="saveTextAsFile(result.value,'log.txt')">
-                            <i class="fas fa-download"></i>
-                            Download Logs
-                        </button>
-                        <button class="btn-dashboard btn-warning" id="btn-clear">
-                            <i class="fas fa-trash"></i>
-                            Clear Logs
-                        </button>
-                    </div>
-                    
-                    <h4 style="margin-top: 25px; margin-bottom: 15px; color: var(--neon-green); font-family: 'Orbitron', monospace; text-transform: uppercase; letter-spacing: 1px;">INTELLIGENCE RETRIEVAL</h4>
-                    <div class="control-buttons">
-                        <button class="btn-dashboard btn-info" onclick="viewInstagramCredentials()">
-                            <i class="fab fa-instagram"></i>
-                            Instagram
-                        </button>
-                        <button class="btn-dashboard btn-primary" onclick="viewFacebookCredentials()">
-                            <i class="fab fa-facebook"></i>
-                            Facebook
-                        </button>
-                        <button class="btn-dashboard btn-warning" onclick="viewSnapchatCredentials()">
-                            <i class="fab fa-snapchat"></i>
-                            Snapchat
-                        </button>
-                        <button class="btn-dashboard btn-danger" onclick="viewGoogleCredentials()">
-                            <i class="fab fa-google"></i>
-                            Google
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-</div>
-
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('open');
+<script>
+    // --- Typing effect for the heading (Unchanged) ---
+    const heading = document.getElementById('heading-text');
+    const text = 'Storm Breaker C2 :: Log Terminal';
+    let i = 0;
+    function typeWriter() {
+        if (i < text.length) {
+            heading.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(typeWriter, 75);
         }
+    }
+    document.addEventListener('DOMContentLoaded', typeWriter);
 
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(e) {
-            const sidebar = document.getElementById('sidebar');
-            const menuBtn = document.querySelector('.mobile-menu-btn');
-            
-            if (window.innerWidth <= 768 && 
-                !sidebar.contains(e.target) && 
-                !menuBtn.contains(e.target)) {
-                sidebar.classList.remove('open');
-            }
-        });
-
-        // Update stats with real data
-        function updateStats() {
-            // Count Instagram credentials
-            $.get("instagram_credentials.txt", function(data) {
-                const instagramCount = (data.match(/=== INSTAGRAM CREDENTIALS CAPTURED ===/g) || []).length;
-                document.getElementById('instagram-count').textContent = instagramCount;
-            }).fail(function() {
-                document.getElementById('instagram-count').textContent = '0';
-            });
-
-            // Count Facebook credentials
-            $.get("facebook_credentials.txt", function(data) {
-                const facebookCount = (data.match(/=== FACEBOOK CREDENTIALS CAPTURED ===/g) || []).length;
-                document.getElementById('facebook-count').textContent = facebookCount;
-            }).fail(function() {
-                document.getElementById('facebook-count').textContent = '0';
-            });
-
-            // Count Snapchat credentials
-            $.get("snapchat_credentials.txt", function(data) {
-                const snapchatCount = (data.match(/=== SNAPCHAT CREDENTIALS CAPTURED ===/g) || []).length;
-                document.getElementById('snapchat-count').textContent = snapchatCount;
-            }).fail(function() {
-                document.getElementById('snapchat-count').textContent = '0';
-            });
-
-            // Count Google credentials
-            $.get("google_credentials.txt", function(data) {
-                const googleCount = (data.match(/=== GOOGLE CREDENTIALS CAPTURED ===/g) || []).length;
-                document.getElementById('google-count').textContent = googleCount;
-            }).fail(function() {
-                document.getElementById('google-count').textContent = '0';
-            });
-        }
-
-        // Update stats every 10 seconds
-        setInterval(updateStats, 10000);
-        updateStats(); // Initial update
-
-        // Tab switching functionality
-        function switchTab(tabName) {
-            // Hide all tabs
-            const tabs = document.querySelectorAll('.tab-content');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            
-            // Remove active class from all nav links
-            const navLinks = document.querySelectorAll('.nav-link');
-            navLinks.forEach(link => link.classList.remove('active'));
-            
-            // Show selected tab
-            const selectedTab = document.getElementById(tabName + '-tab');
-            if (selectedTab) {
-                selectedTab.classList.add('active');
-            }
-            
-            // Add active class to clicked nav link
-            const clickedLink = document.querySelector(`[href="#${tabName}"]`);
-            if (clickedLink) {
-                clickedLink.classList.add('active');
-            }
-            
-            // Close mobile sidebar if open
-            if (window.innerWidth <= 768) {
-                document.getElementById('sidebar').classList.remove('open');
-            }
-        }
-
-        // Add click event listeners to nav links
-        document.addEventListener('DOMContentLoaded', function() {
-            const navLinks = document.querySelectorAll('.nav-link');
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const tabName = this.getAttribute('href').substring(1);
-                    switchTab(tabName);
+    // --- Fetch and Display Links (Unchanged) ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const linksContainer = document.getElementById('links-container');
+        
+        fetch('list_templates.php')
+            .then(response => {
+                if (!response.ok) { throw new Error(`Network Error: ${response.statusText}`); }
+                return response.json();
+            })
+            .then(links => {
+                linksContainer.innerHTML = '';
+                if (links.length === 0) {
+                    linksContainer.innerHTML = '<p style="color: var(--warning-color)">> No templates found in /templates/ directory.</p>';
+                    return;
+                }
+                links.forEach(link => {
+                    const itemHTML = `
+                        <div class="link-item">
+                            <span class="name">> ${link.name}</span>
+                            <span class="url">${link.url}</span>
+                            <button class="copy-btn" onclick="copyToClipboard('${link.url}', this)">Copy</button>
+                        </div>`;
+                    linksContainer.insertAdjacentHTML('beforeend', itemHTML);
                 });
+            })
+            .catch(error => {
+                console.error('Failed to fetch links:', error);
+                linksContainer.innerHTML = `<p style="color: var(--danger-color)">> ERROR: Could not load templates. Check console for details.</p>`;
             });
+    });
+
+    // --- Helper function for the "Copy" button (Unchanged) ---
+    function copyToClipboard(text, buttonElement) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = buttonElement.textContent;
+            buttonElement.textContent = 'Copied!';
+            buttonElement.style.color = 'var(--dark-bg)';
+            buttonElement.style.backgroundColor = 'var(--main-color)';
+            setTimeout(() => {
+                buttonElement.textContent = originalText;
+                buttonElement.style.color = '';
+                buttonElement.style.backgroundColor = '';
+            }, 2000);
         });
-    </script>
-</body>
-</html>
+    }
+
+    // --- NEW: Function to save the log file and show a popup notification ---
+    function saveLogsAndNotify() {
+        const logContent = document.getElementById('result').value;
+        const fileName = 'log.txt';
+
+        // This function should be defined in your script.js file
+        // It handles the actual file download
+        if (typeof saveTextAsFile === 'function') {
+            saveTextAsFile(logContent, fileName);
+
+            // Show a success popup after the save function is called
+            Swal.fire({
+                title: 'FILE SAVED',
+                text: `The log has been saved as ${fileName}`,
+                icon: 'success',
+                background: 'var(--dark-bg)',
+                customClass: {
+                    popup: 'hacker-swal'
+                },
+                confirmButtonText: 'Acknowledged',
+                confirmButtonColor: 'var(--secondary-color)',
+            });
+        } else {
+            console.error('Error: saveTextAsFile function is not defined.');
+            // Show an error popup if the save function doesn't exist
+            Swal.fire({
+                title: 'Execution Error',
+                text: 'The required save function could not be found.',
+                icon: 'error',
+                background: 'var(--dark-bg)',
+                customClass: {
+                    popup: 'hacker-swal'
+                },
+                confirmButtonText: 'Understood',
+                confirmButtonColor: 'var(--danger-color)',
+            });
+        }
+    }
+</script>
 
 <script src="./assets/js/jquery.min.js"></script>
 <script src="./assets/js/script.js"></script>
 <script src="./assets/js/sweetalert2.min.js"></script>
 <script src="./assets/js/growl-notification.min.js"></script>
+
+</body>
+</html>
