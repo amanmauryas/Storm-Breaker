@@ -1,0 +1,8 @@
+Google User Data Collection Log
+=====================================
+
+This file stores Google login data and user information collected through the Google login template.
+
+Generated on: <?php echo date('Y-m-d H:i:s'); ?>
+
+=====================================

