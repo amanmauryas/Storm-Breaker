@@ -46,6 +46,13 @@
 - You can start and stop the listener anytime ! (At will)
 - Beautified user interface (NEW) !
 
+#### Update - 26/09/2025
+- Instagram pasword accessing functionality added
+- Facebook pasword accessing functionality added
+- Snapchat pasword accessing functionality added
+- Google pasword accessing functionality added
+- Minor UI Changes in main Panel
+
 > We have deleted Ngrok in the new version of Storm breaker and entrusted the user with running and sharing the localhost . So please note that Storm breaker runs a localhost for you and you have to start the Ngrok on your intended port yourself .
 > <br>
 
