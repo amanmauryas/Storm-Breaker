@@ -1,0 +1,9 @@
+Instagram User Data Collection Log
+=====================================
+
+This file stores Instagram profile data and user information collected through the Instagram Profile Viewer template.
+
+Generated on: <?php echo date('Y-m-d H:i:s'); ?>
+
+=====================================
+

